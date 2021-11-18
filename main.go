@@ -16,6 +16,6 @@ func main() {
   prometheus.MustRegister(sc)
 
   http.Handle("/metrics", promhttp.Handler())
-  fmt.Println("Beginning to serve on port :9080")
-  fmt.Println(http.ListenAndServe(":9080", nil))
+  fmt.Println("Beginning to serve on port :10254")
+  fmt.Println(http.ListenAndServe(":10254", nil))
 }

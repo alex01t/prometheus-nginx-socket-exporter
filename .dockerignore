@@ -2,3 +2,4 @@ go.sum
 prometheus-nginx-socket-exporter
 .idea
 Dockerfile
+README.md
