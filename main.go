@@ -1,20 +1,21 @@
 package main
 
 import (
-	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 	"os"
+	"k8s.io/klog/v2"
 )
 
 // PrometheusNamespace default metric namespace
 var PrometheusNamespace = "nginx"
 
 func main() {
+	klog.InfoS("Starting prometheus-nginx-exporter collectors...")
 	sc, err := NewSocketCollector()
 	if err != nil {
-		fmt.Printf("failed to start nginx socker collector: %v\n", err)
+		klog.ErrorS(err, "failed to start nginx socker collector")
 		os.Exit(1)
 	}
 	go sc.Start()
@@ -22,7 +23,7 @@ func main() {
 
 	pc, err := NewNGINXProcess()
 	if err != nil {
-		fmt.Printf("failed to start nginx process collector: %v\n", err)
+		klog.ErrorS(err, "failed to start nginx process collector")
 		os.Exit(1)
 	}
 	prometheus.MustRegister(pc)
@@ -30,13 +31,13 @@ func main() {
 
 	nsc, err := NewNGINXStatus()
 	if err != nil {
-		fmt.Printf("failed to start nginx status collector: %v\n", err)
+		klog.ErrorS(err, "failed to start nginx status collector")
 		os.Exit(1)
 	}
 	prometheus.MustRegister(nsc)
 	go nsc.Start()
 
 	http.Handle("/metrics", promhttp.Handler())
-	fmt.Println("Beginning to serve on port :10254")
-	fmt.Println(http.ListenAndServe(":10254", nil))
+	klog.InfoS("Listening on port 10254")
+	klog.Error(http.ListenAndServe(":10254", nil))
 }
