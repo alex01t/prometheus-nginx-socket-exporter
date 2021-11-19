@@ -8,25 +8,22 @@ local nkeys = require "table.nkeys"
 
 -- if an Nginx worker processes more than (MAX_BATCH_SIZE/FLUSH_INTERVAL) RPS then it will start dropping metrics
 local MAX_BATCH_SIZE = 10000
-local FLUSH_INTERVAL = 10 -- second
+local FLUSH_INTERVAL = 1 -- second
 
 local metrics_batch = new_tab(MAX_BATCH_SIZE, 0)
 
 local _M = {}
 
 local function send(payload)
-  ngx.log(ngx.ERR, string.format("send"))
   local s = assert(socket())
   assert(s:connect("unix:/tmp/prometheus-nginx.socket"))
+  -- ngx.log(ngx.ERR, string.format(payload))
   assert(s:send(payload))
   assert(s:close())
 end
 
 local function metrics()
   return {
-    host = ngx.var.host or "-",
-    namespace = ngx.var.namespace or "-",
-    ingress = ngx.var.ingress_name or "-",
     service = ngx.var.service_name or "-",
     path = ngx.var.location_path or "-",
 
@@ -44,29 +41,24 @@ local function metrics()
 end
 
 local function flush(premature)
-  ngx.log(ngx.ERR, string.format("flush!!!"))
   if premature then
     return
   end
-
   if #metrics_batch == 0 then
     return
   end
-
   local current_metrics_batch = clone_tab(metrics_batch)
   clear_tab(metrics_batch)
-
   local payload, err = cjson.encode(current_metrics_batch)
   if not payload then
     ngx.log(ngx.ERR, "error while encoding metrics: ", err)
     return
   end
-
   send(payload)
 end
 
 function _M.init_worker()
-  ngx.log(ngx.ERR, string.format("_M.init_worker"))
+  ngx.log(ngx.NOTICE, string.format("_M.init_worker"))
   local _, err = ngx.timer.every(FLUSH_INTERVAL, flush)
   if err then
     ngx.log(ngx.ERR, string.format("error when setting up timer.every: %s", tostring(err)))
@@ -79,7 +71,6 @@ function _M.call()
     ngx.log(ngx.WARN, "omitting metrics for the request, current batch is full")
     return
   end
-
   metrics_batch[metrics_size + 1] = metrics()
 end
 

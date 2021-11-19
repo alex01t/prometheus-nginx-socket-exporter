@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"log"
-	"strings"
-	"strconv"
 	"os/exec"
+	"strconv"
+	"strings"
 )
 
 type lvmCollector struct {
@@ -38,16 +38,16 @@ func (collector *lvmCollector) Collect(ch chan<- prometheus.Metric) {
 	if err != nil {
 		log.Print(err)
 	}
-	lines := strings.Split(string(out),"\n")
+	lines := strings.Split(string(out), "\n")
 	for _, line := range lines {
-		values := strings.Split(line,",")
-		if len(values)==3 {
-			free_size, err := strconv.ParseFloat(strings.Trim(values[1],"B"), 64)
-			if err!= nil {
+		values := strings.Split(line, ",")
+		if len(values) == 3 {
+			free_size, err := strconv.ParseFloat(strings.Trim(values[1], "B"), 64)
+			if err != nil {
 				log.Print(err)
 			} else {
-				total_size, err := strconv.ParseFloat(strings.Trim(values[2],"B"), 64)
-				if err!= nil {
+				total_size, err := strconv.ParseFloat(strings.Trim(values[2], "B"), 64)
+				if err != nil {
 					log.Print(err)
 				} else {
 					vg_name := strings.Trim(values[0], " ")

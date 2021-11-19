@@ -8,7 +8,7 @@ FROM openresty/openresty:latest
 RUN apt-get -qq update && apt-get install -qq procps vim
 COPY --from=build /app/prometheus-nginx-socket-exporter /prometheus-nginx-socket-exporter
 COPY monitor.lua /etc/nginx/lua/
-COPY default.conf /etc/nginx/conf.d/
+COPY monitor.conf default.conf /etc/nginx/conf.d/
 
 COPY ./entrypoint.sh /
 ENTRYPOINT ["/entrypoint.sh"]
