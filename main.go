@@ -20,7 +20,7 @@ func main() {
 	go sc.Start()
 	prometheus.MustRegister(sc)
 
-	pc, err := NewNGINXProcess("podname", "nsname", "ingname")
+	pc, err := NewNGINXProcess()
 	if err != nil {
 		fmt.Printf("failed to start nginx process collector: %v\n", err)
 		os.Exit(1)
@@ -28,7 +28,7 @@ func main() {
 	prometheus.MustRegister(pc)
 	go pc.Start()
 
-	nsc, err := NewNGINXStatus("podname", "nsname", "ingname")
+	nsc, err := NewNGINXStatus()
 	if err != nil {
 		fmt.Printf("failed to start nginx status collector: %v\n", err)
 		os.Exit(1)

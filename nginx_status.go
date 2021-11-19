@@ -72,16 +72,16 @@ type NGINXStatusCollector interface {
 }
 
 // NewNGINXStatus returns a new prometheus collector the default nginx status module
-func NewNGINXStatus(podName, namespace, ingressClass string) (NGINXStatusCollector, error) {
+func NewNGINXStatus() (NGINXStatusCollector, error) {
 
 	p := nginxStatusCollector{
 		scrapeChan: make(chan scrapeRequest),
 	}
 
 	constLabels := prometheus.Labels{
-		"controller_namespace": namespace,
-		"controller_class":     ingressClass,
-		"controller_pod":       podName,
+		// "controller_namespace": namespace,
+		// "controller_class":     ingressClass,
+		// "controller_pod":       podName,
 	}
 
 	p.data = &nginxStatusData{

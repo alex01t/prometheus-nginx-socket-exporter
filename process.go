@@ -98,7 +98,7 @@ var name = "nginx"
 var binary = "/usr/bin/nginx"
 
 // NewNGINXProcess returns a new prometheus collector for the nginx process
-func NewNGINXProcess(pod, namespace, ingressClass string) (NGINXProcessCollector, error) {
+func NewNGINXProcess() (NGINXProcessCollector, error) {
 	fs, err := proc.NewFS("/proc", false)
 	if err != nil {
 		return nil, err
