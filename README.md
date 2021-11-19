@@ -7,6 +7,9 @@ nginx -- http://localhost:8080/debian/doc/
 
 metrics -- http://localhost:10254/metrics
 
+![](./metrics.jpg)
+
+
 ### this exporter metric list
     curl -s 127.0.0.1:10254/metrics |grep -v ^# | cut -d'{' -f1|cut -d' ' -f1 | sort | uniq
     
