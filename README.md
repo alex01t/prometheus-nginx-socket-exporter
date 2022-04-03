@@ -1,3 +1,23 @@
+## stand-alone version of [k8s/ingress-nginx](https://github.com/kubernetes/ingress-nginx)' prometheus exporter
+
+based on [openresty/lua-nginx-module](https://github.com/openresty/lua-nginx-module)
+
+### how it works
+
+exporter opens socket (/tmp/prometheus-nginx.socket) and waits for Nginx workers to send logs every second
+
+Nginx config should have [monitor.lua](https://github.com/alex01t/prometheus-nginx-socket-exporter/blob/master/nginx/lua/monitor.lua) and [monitor.conf](https://github.com/alex01t/prometheus-nginx-socket-exporter/blob/master/nginx/conf.d/monitor.conf) from this repo
+
+user config may be instrumented with `service_name` and `location_path` that go as labels, see example [default.conf](https://github.com/alex01t/prometheus-nginx-socket-exporter/blob/master/nginx/conf.d/default.conf)
+```
+server {
+    set $service_name  "app8080";
+    listen       8080;
+    location / {
+        set $location_path  "/backend";
+        proxy_pass http://backend;
+    }
+```
 ### how to run
 
     docker build . -t r

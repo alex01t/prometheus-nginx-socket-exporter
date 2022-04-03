@@ -15,7 +15,8 @@ type upstream struct {
 	Latency        float64 `json:"upstreamLatency"`
 	ResponseLength float64 `json:"upstreamResponseLength"`
 	ResponseTime   float64 `json:"upstreamResponseTime"`
-	//Status         string  `json:"upstreamStatus"`
+	// Status         string  `json:"upstreamStatus"`
+	CacheStatus    string  `json:"upstreamCacheStatus"`
 }
 
 type socketData struct {
@@ -49,6 +50,8 @@ var (
 		"method",
 		"path",
 		"service",
+		// "upstream_status",
+		"upstream_cache_status",
 	}
 )
 
@@ -186,6 +189,8 @@ func (sc *SocketCollector) handleMessage(msg []byte) {
 		// Note these must match the order in requestTags at the top
 		requestLabels := prometheus.Labels{
 			"status":  stats.Status,
+			// "upstream_status":       stats.upstream.Status,
+			"upstream_cache_status": stats.upstream.CacheStatus,
 			"method":  stats.Method,
 			"path":    stats.Path,
 			"service": stats.Service,
