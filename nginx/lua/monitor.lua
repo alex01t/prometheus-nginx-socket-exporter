@@ -38,7 +38,7 @@ local function metrics()
     upstreamResponseLength = tonumber(ngx.var.upstream_response_length) or -1,
     -- upstreamStatus = ngx.var.upstream_status or "-",
     upstreamCacheStatus = ngx.var.upstream_cache_status or "-",
-    upstream = ngx.var.upstream or "-",
+    upstream = ngx.var.upstream_addr or "-",
   }
 end
 
