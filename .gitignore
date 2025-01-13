@@ -1,4 +1,3 @@
-go.sum
 prometheus-nginx-socket-exporter
 .idea
 vendor/*

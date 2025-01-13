@@ -2,8 +2,7 @@ FROM golang:1.17 as build
 WORKDIR /app
 COPY go.mod go.sum ./
 COPY main.go nginx.go nginx_status.go process.go socket.go ./
-RUN go mod vendor
-RUN go build
+RUN go get -v && go build
 
 FROM openresty/openresty:1.19.9.1-5-bullseye-fat
 RUN apt-get -qq update \
