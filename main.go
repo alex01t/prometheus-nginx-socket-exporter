@@ -3,9 +3,9 @@ package main
 import (
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"k8s.io/klog/v2"
 	"net/http"
 	"os"
-	"k8s.io/klog/v2"
 )
 
 // PrometheusNamespace default metric namespace

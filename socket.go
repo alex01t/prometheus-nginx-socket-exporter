@@ -90,46 +90,6 @@ func NewSocketCollector() (*SocketCollector, error) {
 
 	sc := &SocketCollector{
 		listener: listener,
-		responseTime: prometheus.NewHistogramVec(
-			prometheus.HistogramOpts{
-				Name:        "response_duration_seconds",
-				Help:        "The time spent on receiving the response from the upstream server",
-				Namespace:   PrometheusNamespace,
-				ConstLabels: constLabels,
-			},
-			requestTags,
-		),
-		responseLength: prometheus.NewHistogramVec(
-			prometheus.HistogramOpts{
-				Name:        "response_size",
-				Help:        "The response length (including request line, header, and request body)",
-				Namespace:   PrometheusNamespace,
-				Buckets:     prometheus.ExponentialBuckets(2, 4, 14),
-				ConstLabels: constLabels,
-			},
-			requestTags,
-		),
-
-		requestTime: prometheus.NewHistogramVec(
-			prometheus.HistogramOpts{
-				Name:        "request_duration_seconds",
-				Help:        "The request processing time in milliseconds",
-				Namespace:   PrometheusNamespace,
-				ConstLabels: constLabels,
-			},
-			requestTags,
-		),
-		requestLength: prometheus.NewHistogramVec(
-			prometheus.HistogramOpts{
-				Name:        "request_size",
-				Help:        "The request length (including request line, header, and request body)",
-				Namespace:   PrometheusNamespace,
-				Buckets:     prometheus.ExponentialBuckets(32, 2, 12),
-				ConstLabels: constLabels,
-			},
-			requestTags,
-		),
-
 		requests: prometheus.NewCounterVec(
 			prometheus.CounterOpts{
 				Name:        "requests",
@@ -139,18 +99,76 @@ func NewSocketCollector() (*SocketCollector, error) {
 			},
 			[]string{"status", "service"},
 		),
-
-		bytesSent: prometheus.NewHistogramVec(
+		requestTime: prometheus.NewHistogramVec(
 			prometheus.HistogramOpts{
-				Name:        "bytes_sent",
-				Help:        "The number of bytes sent to a client",
+				Name:        "request_duration_seconds",
+				Help:        "The request processing time in milliseconds",
 				Namespace:   PrometheusNamespace,
-				Buckets:     prometheus.ExponentialBuckets(2, 4, 14),
+				ConstLabels: constLabels,
+				Buckets: []float64{
+					0.01, 0.025, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+					1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2, 2.25, 2.5, 3,
+				},
+			},
+			requestTags,
+		),
+		responseTime: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:        "response_duration_seconds",
+				Help:        "The time spent on receiving the response from the upstream server",
+				Namespace:   PrometheusNamespace,
+				ConstLabels: constLabels,
+				Buckets: []float64{
+					0.01, 0.025, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+					1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.75, 2, 2.25, 2.5, 3,
+				},
+			},
+			requestTags,
+		),
+		requestLength: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:      "request_size",
+				Help:      "The request length (including request line, header, and request body)",
+				Namespace: PrometheusNamespace,
+				// Buckets:     prometheus.ExponentialBuckets(32, 2, 12),
+				Buckets: []float64{
+					100, 200, 300, 400, 500, 600, 700, 800, 900,
+					1000, 1200, 1400, 1600, 1800, 2000, 2500, 3000, 4000,
+				},
 				ConstLabels: constLabels,
 			},
 			requestTags,
 		),
-
+		bytesSent: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:      "bytes_sent",
+				Help:      "The number of bytes sent to a client",
+				Namespace: PrometheusNamespace,
+				// Buckets:     prometheus.ExponentialBuckets(2, 4, 14),
+				Buckets: []float64{
+					10, 20, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+					1000, 1200, 1400, 1600, 1800, 2000, 2250, 2500, 2750,
+					3000, 3500, 4000, 8000, 12000, 100000, 1000000, 10000000,
+				},
+				ConstLabels: constLabels,
+			},
+			requestTags,
+		),
+		responseLength: prometheus.NewHistogramVec(
+			prometheus.HistogramOpts{
+				Name:      "response_size",
+				Help:      "The response length (including request line, header, and request body)",
+				Namespace: PrometheusNamespace,
+				// Buckets:     prometheus.ExponentialBuckets(2, 4, 14),
+				Buckets: []float64{
+					10, 20, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+					1000, 1200, 1400, 1600, 1800, 2000, 2250, 2500, 2750,
+					3000, 3500, 4000, 8000, 12000, 100000, 1000000, 10000000,
+				},
+				ConstLabels: constLabels,
+			},
+			requestTags,
+		),
 		upstreamLatency: prometheus.NewSummaryVec(
 			prometheus.SummaryOpts{
 				Name:        "upstream_latency_seconds",
